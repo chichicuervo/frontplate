@@ -3,9 +3,11 @@
     "version": "0.0.1",
     "main": "index.js",
     "scripts": {
-        "build": "cross-env NODE_ENV=production webpack --mode production",
+        "build": "npm run build:client && npm run build:server",
+        "build:client": "cross-env NODE_ENV=production webpack --mode production --config config/client.webpack.js",
+        "build:server": "cross-env NODE_ENV=production webpack --mode production --config config/server.webpack.js",
         "start:dev": "cross-env NODE_ENV=development nodemon --ignore src/App/ --exec babel-node server.js",
-        "start:prod": "cross-env NODE_ENV=production nodemon --exec babel-node src/server.bundle.js",
+        "start:prod": "node src/server.bundle.js",
         "start": "npm run build && npm run start:prod"
     },
     "author": "Jason Belich <jason@belich.com>",
@@ -13,6 +15,7 @@
     "devDependencies": {
         "@babel/core": "^7.6.0",
         "@babel/node": "^7.6.1",
+        "@babel/plugin-proposal-class-properties": "^7.5.5",
         "@babel/preset-env": "^7.6.0",
         "@babel/preset-react": "^7.0.0",
         "babel-loader": "^8.0.6",
@@ -21,7 +24,9 @@
         "nodemon": "^1.19.2",
         "react-hot-loader": "^4.12.12",
         "source-map-support": "^0.5.13",
+        "uglifyjs-webpack-plugin": "^2.2.0",
         "webpack": "^4.39.3",
+        "webpack-bundle-analyzer": "^3.4.1",
         "webpack-cli": "^3.3.8",
         "webpack-dev-server": "^3.8.0",
         "webpack-hot-middleware": "^2.25.0",

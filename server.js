@@ -8,18 +8,15 @@ import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpack from 'webpack';
 
-import config from './webpack.config.js';
+import serverConfig from './config/server.webpack.js'
+import clientConfig from './config/client.webpack.js'
 
 const DEV_MODE = process.env.NODE_ENV !== 'production';
-const ROOT_DIR = path.resolve( __dirname, '.' ); // .. when we get into it
-const resolvePath = ( ...args ) => path.resolve( ROOT_DIR, ...args );
-const SRC_DIR = resolvePath( 'src' );
-const BUILD_DIR = resolvePath( 'dist' );
 
-const compiler = webpack(config);
+const compiler = webpack([clientConfig, serverConfig]);
 
 const options = DEV_MODE ? {
-    port: process.env.BIND_PORT || 3000,
+    port: process.env.BIND_PORT || 4000,
     host: process.env.BIND_HOST || '0.0.0.0',
 } : {
     port: process.env.BIND_PORT || 80,
