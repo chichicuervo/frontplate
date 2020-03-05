@@ -1,52 +1,59 @@
 const path = require( 'path' );
 const webpack = require( 'webpack' );
 
-const {CleanWebpackPlugin} = require( 'clean-webpack-plugin' );
-const HtmlWebpackPlugin = require( 'html-webpack-plugin' );
-const BundleAnalyzerPlugin = require( 'webpack-bundle-analyzer' ).BundleAnalyzerPlugin;
-const UglifyJsPlugin = require( 'uglifyjs-webpack-plugin' );
-
 const { compact } = require( 'lodash' );
 
-const DEV_MODE = process.env.NODE_ENV !== 'production';
+const { CleanWebpackPlugin } = require( 'clean-webpack-plugin' );
+const HtmlWebpackPlugin = require( 'html-webpack-plugin' );
+const BundleAnalyzerPlugin = require( 'webpack-bundle-analyzer' ).BundleAnalyzerPlugin;
+const TerserPlugin = require('terser-webpack-plugin')
+const LoadablePlugin = require('@loadable/webpack-plugin')
 
 const ROOT_DIR = path.resolve( __dirname, ".." );
+const DEV_MODE = process.env.NODE_ENV !== "production";
 const BUILD_DIR = path.resolve( ROOT_DIR, "dist" )
 
-// console.log(ROOT_DIR, BUILD_DIR)
-
-
 const entryConfig = compact([
-    '@babel/polyfill',
+    path.resolve( ROOT_DIR, 'src/polyfill.js' ),
     DEV_MODE && 'webpack-hot-middleware/client?name=client&reload=true&path=/__webpack_hmr',
     path.resolve( ROOT_DIR, 'client.js' ),
 ]);
 
 const moduleConfig = {
-	rules: [ {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+    rules: [ {
+        test: /\.s?css$/,
+        use: [ 'style-loader', 'css-loader' ]
     }, {
-		test: /\.(mjs|jsx?)$/,
-		exclude: /node_modules/,
-		use: {
-			loader: 'babel-loader',
-			options: {
+        test: /\.(mjs|jsx?)$/,
+        exclude: /node_modules/,
+        use: {
+            loader: 'babel-loader',
+            options: {
                 cacheDirectory: true,
-			}
-		}
+            }
+        }
     }, {
         test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
         use: {
             loader: 'file-loader',
             options: {
                 name: '[name].[ext]',
+                outputPath: 'assets'
+            }
+        }
+    }, {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: {
+            loader: 'file-loader',
+            options: {
+                name: '[name].[ext]',
+                outputPath: 'assets'
             }
         }
     }, {
         test: /\.mdx?$/,
         use: [ 'babel-loader', '@mdx-js/loader' ]
-	} ]
+    } ]
 };
 
 const pluginsConfig = compact([
@@ -56,7 +63,7 @@ const pluginsConfig = compact([
 		'process.env.NODE_ENV': DEV_MODE ? '"development"' : '"production"'
 	} ),
     new HtmlWebpackPlugin( {
-        // put plugin params here
+        // template: path.resolve(ROOT_DIR, 'src/index.html')
     } ),
     DEV_MODE && new webpack.HotModuleReplacementPlugin(),
     !DEV_MODE && new CleanWebpackPlugin(),
@@ -64,6 +71,7 @@ const pluginsConfig = compact([
         analyzerMode: 'static',
         openAnalyzer: false
     } ),
+    new LoadablePlugin(),
 ]);
 
 const clientConfig = {
@@ -75,7 +83,7 @@ const clientConfig = {
     plugins: pluginsConfig,
     output: {
         path: BUILD_DIR,
-        filename: 'client.bundle.js',
+        filename: DEV_MODE ? 'assets/[hash].js' : 'assets/[contenthash].js',
         publicPath: "/"
     },
 	resolve: {
