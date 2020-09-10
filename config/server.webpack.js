@@ -68,7 +68,7 @@ const serverConfig = {
         ]
 	},
     externals: [ nodeExternals( { // i think we want to explictly exclude assets?
-        whitelist: [] // i think we /want/ to include static files under node_modules?
+        allowlist: [] // i think we /want/ to include static files under node_modules?
     } ) ],
     optimization: {
         minimize: true,
