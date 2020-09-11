@@ -32,6 +32,7 @@ module.exports = {
             new webpack.HotModuleReplacementPlugin()
         ] || [
             new CleanWebpackPlugin({
+                verbose: true,
                 cleanOnceBeforeBuildPatterns: ['server.bundle.js']
             })
         ])

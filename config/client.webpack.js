@@ -33,7 +33,10 @@ module.exports =  {
         ...(DEV_MODE && [
             new webpack.HotModuleReplacementPlugin()
         ] || [
-            new CleanWebpackPlugin(),
+            new CleanWebpackPlugin({
+                verbose: true,
+                cleanOnceBeforeBuildPatterns: ['**/*', '!server.*']
+            }),
             new BundleAnalyzerPlugin({
                 analyzerMode: 'static',
                 openAnalyzer: false
