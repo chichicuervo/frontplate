@@ -11,6 +11,10 @@ module.exports = function (api) {
 			// development: process.env.BABEL_ENV === "development"
 		}],
 		["@babel/preset-env", {
+            targets: {
+                esmodules: true,
+                node: true,
+            },
 			useBuiltIns: "usage",
             corejs: {
 				version: 3,
@@ -18,12 +22,22 @@ module.exports = function (api) {
 			},
             modules: 'auto',
             shippedProposals: true,
+            loose: true,
+            bugfixes: true,
 		}],
 	]
 
     const plugins = [
         'react-hot-loader/babel',
-        '@babel/plugin-proposal-class-properties',
+        ["@babel/plugin-proposal-decorators", {
+            legacy: true,
+        }],
+        ['@babel/plugin-proposal-class-properties', {
+            loose: true
+        }],
+        ["@babel/plugin-proposal-private-methods", {
+            loose: true
+        }],
         '@loadable/babel-plugin'
     ]
 

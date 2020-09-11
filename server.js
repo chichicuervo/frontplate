@@ -13,15 +13,10 @@ import clientConfig from './config/client.webpack.js'
 
 const DEV_MODE = process.env.NODE_ENV !== 'production';
 
-const compiler = webpack([clientConfig, serverConfig]);
+const compiler = webpack([ clientConfig, serverConfig ]);
 
-const options = DEV_MODE ? {
-    port: process.env.BIND_PORT || 4000,
-    host: process.env.BIND_HOST || '0.0.0.0',
-} : {
-    port: process.env.BIND_PORT || 80,
-    host: process.env.BIND_HOST || '0.0.0.0',
-};
+const client = compiler.compilers.reduce((a,c) => c.name === 'client' && c || a)
+const server = compiler.compilers.reduce((a,c) => c.name === 'server' && c || a)
 
 express.static.mime.define({'application/json': ['json']});
 
@@ -29,21 +24,13 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-let compilerOpts = compiler.options;
-
-if (compiler.compilers) {
-    let d = compiler.compilers.filter( el => { return el.options.name == 'client'; })[0];
-    compilerOpts = d.options;
-}
-
 if (DEV_MODE) {
     app.use(webpackDevMiddleware(compiler, {
         noInfo: true,
-        publicPath: compilerOpts.output.publicPath || '/',
-        watchOptions: { poll: true },
+        publicPath: client.options.output.publicPath || '/',
         serverSideRender: true,
         index: true,
-        hot: true, // should this be here?
+        ...client.options.devServer
     }));
 
     app.use(webpackHotMiddleware(compiler, {
@@ -52,13 +39,18 @@ if (DEV_MODE) {
         heartbeat: 2000,
     }));
 } else {
-    app.use(compilerOpts.output.publicPath || '/', express.static('dist'));
+    app.use(client.options.output.publicPath || '/', express.static('dist'));
 }
-
 
 import Api from './src/Api';
 
 app.use(Api);
+
+const options = {
+    port: process.env.BIND_PORT || 80,
+    host: process.env.BIND_HOST || '0.0.0.0',
+    ...(DEV_MODE && server.options.devServer || undefined)
+}
 
 app.listen(options.port, options.host, (err) => {
     if (err) {
