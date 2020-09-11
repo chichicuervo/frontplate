@@ -8,8 +8,8 @@ import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpack from 'webpack';
 
-import serverConfig from './config/server.webpack.js'
-import clientConfig from './config/client.webpack.js'
+const serverConfig = require('./config/server.webpack.js')
+const clientConfig = require('./config/client.webpack.js')
 
 const DEV_MODE = process.env.NODE_ENV !== 'production';
 

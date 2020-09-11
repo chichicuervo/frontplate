@@ -13,7 +13,7 @@ const BUILD_DIR = path.resolve( ROOT_DIR, "dist" )
 
 const server_params = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'dev.config.json')) || '')
 
-export default {
+module.exports = {
     name: 'server',
 	target: 'node',
 	entry: [
