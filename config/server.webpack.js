@@ -79,12 +79,12 @@ module.exports = {
         hints: false,
     },
     node: {
-		console: false,
-		global: false,
-		process: false,
-		Buffer: false,
-		__filename: false,
-		__dirname: false,
+        global: false,
+        __filename: false,
+        __dirname: false,
+		// console: false,
+		// process: false,
+		// Buffer: false,
 	},
     devServer: {
         host: server_params.dev_host || '0.0.0.0',
