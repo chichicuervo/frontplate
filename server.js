@@ -8,15 +8,19 @@ import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpack from 'webpack';
 
-const serverConfig = require('./config/server.webpack.js')
-const clientConfig = require('./config/client.webpack.js')
-
 const DEV_MODE = process.env.NODE_ENV !== 'production';
 
-const compiler = webpack([ clientConfig, serverConfig ]);
+let compiler, client, server
 
-const client = compiler.compilers.reduce((a,c) => c.name === 'client' && c || a)
-const server = compiler.compilers.reduce((a,c) => c.name === 'server' && c || a)
+if (DEV_MODE) {
+    const serverConfig = require('./config/server.webpack.js')
+    const clientConfig = require('./config/client.webpack.js')
+
+    compiler = webpack([ clientConfig, serverConfig ]);
+
+    client = compiler.compilers.reduce((a,c) => c.name === 'client' && c || a)
+    server = compiler.compilers.reduce((a,c) => c.name === 'server' && c || a)
+}
 
 express.static.mime.define({'application/json': ['json']});
 
@@ -39,7 +43,7 @@ if (DEV_MODE) {
         heartbeat: 2000,
     }));
 } else {
-    app.use(client.options.output.publicPath || '/', express.static('dist'));
+    app.use(client && client.options.output.publicPath || '/', express.static('dist'));
 }
 
 import Api from './src/Api';
@@ -49,7 +53,7 @@ app.use(Api);
 const options = {
     port: process.env.BIND_PORT || 80,
     host: process.env.BIND_HOST || '0.0.0.0',
-    ...(DEV_MODE && server.options.devServer || undefined)
+    ...(DEV_MODE && server && server.options.devServer || undefined)
 }
 
 app.listen(options.port, options.host, (err) => {

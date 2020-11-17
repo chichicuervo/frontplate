@@ -11,7 +11,7 @@ const ROOT_DIR = path.resolve( __dirname, ".." );
 const DEV_MODE = process.env.NODE_ENV !== 'production';
 const BUILD_DIR = path.resolve( ROOT_DIR, "dist" )
 
-const server_params = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'dev.config.json')) || '')
+const server_params = require('./dev.config.json')
 
 module.exports = {
     name: 'server',
