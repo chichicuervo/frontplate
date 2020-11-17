@@ -11,9 +11,9 @@ const ROOT_DIR = path.resolve( __dirname, ".." );
 const DEV_MODE = process.env.NODE_ENV !== "production";
 const BUILD_DIR = path.resolve( ROOT_DIR, "dist" )
 
-module.exports =  {
+module.exports = {
     name: 'client',
-    target: 'web',
+    target: ['web', 'es5'],
     entry: [
         'react-hot-loader/patch',
         path.resolve( ROOT_DIR, 'src/polyfill.js' ),

@@ -3,6 +3,7 @@
 import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
@@ -25,6 +26,8 @@ if (DEV_MODE) {
 express.static.mime.define({'application/json': ['json']});
 
 const app = express();
+
+app.use(cors())
 
 app.use(bodyParser.urlencoded({ extended: true }));
 

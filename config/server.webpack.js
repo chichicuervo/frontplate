@@ -15,7 +15,7 @@ const server_params = require('./dev.config.json')
 
 module.exports = {
     name: 'server',
-	target: 'node',
+	target: ['node', 'es5'],
 	entry: [
         path.resolve( ROOT_DIR, 'src/polyfill.js' ),
         ...(DEV_MODE && ['webpack-hot-middleware/client?name=server&reload=true'] || []),
@@ -82,9 +82,6 @@ module.exports = {
         global: false,
         __filename: false,
         __dirname: false,
-		// console: false,
-		// process: false,
-		// Buffer: false,
 	},
     devServer: {
         host: server_params.dev_host || '0.0.0.0',
