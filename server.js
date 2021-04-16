@@ -22,8 +22,7 @@ const options = {
         secret: process.env.SESSION_SECRET || 'ebo la la laaa',
         maxage: parseInt(process.env.SESSION_MAXAGE) || 3600,
         secure: process.env.SESSION_SECURE || false,
-    },
-    devMode: process.env.NODE_ENV !== 'production'
+    }
 }
 
 let compiler, client, server
