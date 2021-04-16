@@ -1,6 +1,5 @@
 'use strict';
 
-// import path from 'path'
 import express from 'express'
 import cookieParser from 'cookie-parser'
 
@@ -52,7 +51,6 @@ import Api from './src/Api';
         app.use(express.json())
         app.use(express.urlencoded({ extended: true }))
         app.use(cookieParser())
-        // app.use(express.static(path.join(__dirname, "public")))
         app.use(session({
             secret: options.session.secret,
             resave: false,

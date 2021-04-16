@@ -26,7 +26,6 @@ module.exports = {
     ].filter(Boolean),
 
     plugins: [
-        ...(DEV_MODE && [ 'react-hot-loader/babel' ]),
         [ "@babel/plugin-proposal-decorators", {
             legacy: true,
         } ],

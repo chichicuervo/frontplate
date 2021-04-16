@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const TerserPlugin = require('terser-webpack-plugin')
 const LoadablePlugin = require('@loadable/webpack-plugin')
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 
 const DEV_MODE = process.env.NODE_ENV !== "production"
 const ROOT_DIR = path.resolve(__dirname, "..")
@@ -15,7 +16,6 @@ module.exports = {
     name: 'client',
     target: [ 'web', 'es2015' ],
     entry: [
-        'react-hot-loader/patch',
         path.resolve(ROOT_DIR, 'src/polyfill.js'),
         ...(DEV_MODE && [ 'webpack-hot-middleware/client?name=client&reload=true&path=/__webpack_hmr' ] || []),
         path.resolve(ROOT_DIR, 'client.js')
@@ -31,7 +31,12 @@ module.exports = {
             // template: path.resolve(ROOT_DIR, 'src/index.html')
         }),
         ...(DEV_MODE ? [
-            new webpack.HotModuleReplacementPlugin()
+            new webpack.HotModuleReplacementPlugin(),
+            new ReactRefreshWebpackPlugin({
+                overlay: {
+                    sockIntegration: 'whm'
+                }
+            })
         ] : [
             new CleanWebpackPlugin({
                 verbose: true,
@@ -55,6 +60,9 @@ module.exports = {
                 loader: 'babel-loader',
                 options: {
                     cacheDirectory: true,
+                    plugins: [
+                        DEV_MODE && require.resolve('react-refresh/babel')
+                    ].filter(Boolean)
                 }
             }
         }, {
@@ -98,13 +106,9 @@ module.exports = {
     resolve: {
         modules: [
             path.resolve(ROOT_DIR, "src"),
-            path.resolve(ROOT_DIR, "node_modules")
+            path.resolve(ROOT_DIR, "node_modules"),
+            path.resolve(ROOT_DIR, "node_modules/react-dom/node_modules"), // react-dom seems to need this with react-refresh
         ],
-        alias: {
-            ...(DEV_MODE && {
-                'react-dom': '@hot-loader/react-dom'
-            })
-        }
     },
     devServer: {
         historyApiFallback: true,
