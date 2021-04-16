@@ -1,41 +1,41 @@
-const path = require( 'path' );
-const webpack = require( 'webpack' );
+const path = require('path')
+const webpack = require('webpack')
 
-const { CleanWebpackPlugin } = require( 'clean-webpack-plugin' );
-const HtmlWebpackPlugin = require( 'html-webpack-plugin' );
-const BundleAnalyzerPlugin = require( 'webpack-bundle-analyzer' ).BundleAnalyzerPlugin;
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const TerserPlugin = require('terser-webpack-plugin')
 const LoadablePlugin = require('@loadable/webpack-plugin')
 
-const ROOT_DIR = path.resolve( __dirname, ".." );
-const DEV_MODE = process.env.NODE_ENV !== "production";
-const BUILD_DIR = path.resolve( ROOT_DIR, "dist" )
+const DEV_MODE = process.env.NODE_ENV !== "production"
+const ROOT_DIR = path.resolve(__dirname, "..")
+const BUILD_DIR = path.resolve(ROOT_DIR, "dist")
 
 module.exports = {
     name: 'client',
-    target: ['web', 'es5'],
+    target: [ 'web', 'es2015' ],
     entry: [
         'react-hot-loader/patch',
-        path.resolve( ROOT_DIR, 'src/polyfill.js' ),
-        ...(DEV_MODE && ['webpack-hot-middleware/client?name=client&reload=true&path=/__webpack_hmr'] || []),
-        path.resolve( ROOT_DIR, 'client.js' )
+        path.resolve(ROOT_DIR, 'src/polyfill.js'),
+        ...(DEV_MODE && [ 'webpack-hot-middleware/client?name=client&reload=true&path=/__webpack_hmr' ] || []),
+        path.resolve(ROOT_DIR, 'client.js')
     ],
     mode: DEV_MODE ? "development" : "production",
     plugins: [
         new webpack.DefinePlugin({
-    		DEV_MODE: DEV_MODE,
-    		'process.env.BROWSER': true,
-    		'process.env.NODE_ENV': DEV_MODE ? '"development"' : '"production"'
-    	}),
+            DEV_MODE,
+            'process.env.BROWSER': true,
+            'process.env.NODE_ENV': DEV_MODE ? '"development"' : '"production"'
+        }),
         new HtmlWebpackPlugin({
             // template: path.resolve(ROOT_DIR, 'src/index.html')
         }),
-        ...(DEV_MODE && [
+        ...(DEV_MODE ? [
             new webpack.HotModuleReplacementPlugin()
-        ] || [
+        ] : [
             new CleanWebpackPlugin({
                 verbose: true,
-                cleanOnceBeforeBuildPatterns: ['**/*', '!server.*']
+                cleanOnceBeforeBuildPatterns: [ '**/*', '!server.*' ]
             }),
             new BundleAnalyzerPlugin({
                 analyzerMode: 'static',
@@ -43,13 +43,13 @@ module.exports = {
             })
         ]),
         new LoadablePlugin(),
-    ],
+    ].filter(Boolean),
     module: {
         rules: [ {
             test: /\.s?css$/,
             use: [ 'style-loader', 'css-loader' ]
         }, {
-            test: /\.(mjs|jsx?)$/,
+            test: /\.(mjs|[jt]sx?)$/,
             exclude: /node_modules/,
             use: {
                 loader: 'babel-loader',
@@ -83,10 +83,12 @@ module.exports = {
     optimization: {
         sideEffects: true,
         usedExports: true,
-        minimize: true,
-        minimizer: [
-            new TerserPlugin()
-        ]
+        ...(DEV_MODE ? {} : {
+            minimize: true,
+            minimizer: [
+                new TerserPlugin()
+            ]
+        })
     },
     output: {
         path: BUILD_DIR,
@@ -95,8 +97,8 @@ module.exports = {
     },
     resolve: {
         modules: [
-            path.resolve( ROOT_DIR, "src" ),
-            path.resolve( ROOT_DIR, "node_modules" )
+            path.resolve(ROOT_DIR, "src"),
+            path.resolve(ROOT_DIR, "node_modules")
         ],
         alias: {
             ...(DEV_MODE && {
