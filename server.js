@@ -29,10 +29,10 @@ const options = {
 let compiler, client, server
 
 if (DEV_MODE) {
-    // const serverConfig = require('./config/server.webpack.js')
     const clientConfig = require('./config/client.webpack.js')
+    // const serverConfig = require('./config/server.webpack.js')
 
-    compiler = webpack([ clientConfig /** * /, serverConfig /** */ ]);
+    compiler = webpack([ clientConfig /** * /, serverConfig /** */ ])
 
     client = compiler.compilers.reduce((a, c) => c.name === 'client' && c || a)
     // server = compiler.compilers.reduce((a, c) => c.name === 'server' && c || a)
