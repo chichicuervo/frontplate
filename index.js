@@ -1,4 +1,4 @@
 require('@babel/core/register');
-require('@babel/polyfill');
+require('./src/polyfill.js');
 
 require('./server.js');
